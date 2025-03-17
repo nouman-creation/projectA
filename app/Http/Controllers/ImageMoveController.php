@@ -36,9 +36,10 @@ class ImageMoveController extends Controller
             $movedFiles[] = $file->getFilename();
         }
 
-        //Test My New File
 
-        //Test My Second File
+
+
+
 
 
         return response()->json(['message' => 'Images moved successfully.', 'files' => $movedFiles]);
