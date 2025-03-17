@@ -39,6 +39,9 @@ class ImageMoveController extends Controller
 
 
 
+
+
+
         return response()->json(['message' => 'Images moved successfully.', 'files' => $movedFiles]);
     }
 }
