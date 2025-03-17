@@ -36,9 +36,6 @@ class ImageMoveController extends Controller
             $movedFiles[] = $file->getFilename();
         }
 
-        //Test My New File
-
-        //Test My Second File
 
 
 
