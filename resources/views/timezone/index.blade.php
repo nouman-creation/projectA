@@ -21,6 +21,20 @@
                     </div>
                 </div>
 
+                <!-- Time Slider -->
+                <div class="mb-6">
+                    <div class="flex justify-between items-center mb-2">
+                        <label for="timeSlider" class="block text-sm font-medium text-gray-700">Adjust Time</label>
+                        <span id="timeOffset" class="text-sm text-gray-600">+0 hours</span>
+                    </div>
+                    <input type="range" id="timeSlider" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer" min="-12" max="12" step="1" value="0">
+                    <div class="flex justify-between text-xs text-gray-500 mt-1">
+                        <span>-12h</span>
+                        <span>0h</span>
+                        <span>+12h</span>
+                    </div>
+                </div>
+
                 <div id="searchResults" class="space-y-2 max-h-60 overflow-y-auto hidden">
                     <!-- Search results will be displayed here -->
                 </div>
@@ -35,6 +49,7 @@
     <script>
         $(document).ready(function() {
             let selectedTimezones = new Set();
+            let timeOffset = 0;
 
             function updateTimes() {
                 if (selectedTimezones.size === 0) {
@@ -52,6 +67,20 @@
                     success: function(response) {
                         $('#selectedTimezones').empty();
                         response.times.forEach(function(timeInfo) {
+                            // Apply time offset
+                            let [hours, minutes, seconds] = timeInfo.time.split(':');
+                            let date = new Date();
+                            date.setHours(parseInt(hours) + timeOffset);
+                            
+                            // Format the adjusted time
+                            let adjustedHours = date.getHours().toString().padStart(2, '0');
+                            let adjustedMinutes = minutes;
+                            let adjustedSeconds = seconds;
+                            let adjustedTime = `${adjustedHours}:${adjustedMinutes}:${adjustedSeconds}`;
+                            
+                            // Format the date
+                            let adjustedDate = timeInfo.date;
+                            
                             $('#selectedTimezones').append(`
                                 <div class="bg-white rounded-lg shadow-lg p-6">
                                     <div class="flex justify-between items-center">
@@ -60,8 +89,8 @@
                                             <p class="text-gray-600">${timeInfo.country}</p>
                                         </div>
                                         <div class="text-right">
-                                            <div class="text-3xl font-bold text-gray-800">${timeInfo.time}</div>
-                                            <div class="text-gray-600">${timeInfo.date}</div>
+                                            <div class="text-3xl font-bold text-gray-800">${adjustedTime}</div>
+                                            <div class="text-gray-600">${adjustedDate}</div>
                                             <div class="text-gray-600">UTC${timeInfo.offset}</div>
                                         </div>
                                         <button class="remove-timezone px-3 py-1 text-red-500 hover:text-red-700" data-timezone="${timeInfo.timezone}">
@@ -117,6 +146,13 @@
                     }
                 });
             }
+
+            // Time slider functionality
+            $('#timeSlider').on('input', function() {
+                timeOffset = parseInt($(this).val());
+                $('#timeOffset').text((timeOffset >= 0 ? '+' : '') + timeOffset + ' hours');
+                updateTimes();
+            });
 
             $('#searchBtn').click(performSearch);
             
